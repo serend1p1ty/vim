@@ -11,6 +11,5 @@ sh ~/.vim_runtime/install.sh
 ## Update plugins
 
 ```
-rm ~/.vim_runtime/plugged -rf
-vim "+PlugInstall" "+qall"
+sh ~/.vim_runtime/update_plugins.sh
 ```

@@ -127,7 +127,7 @@ Plug '~/.fzf' | Plug 'junegunn/fzf.vim'
 call plug#end()
 
 " supertab
-" traversing the completion list from top to bottom
+" traverse the completion list from top to bottom
 let g:SuperTabDefaultCompletionType = "<c-n>"
 
 " lightline
@@ -151,7 +151,11 @@ let g:lightline = {
   \ }
 
 " onedark.vim
+" when onedark.vim is not installed, an error will be raised
+try
 colorscheme onedark
+catch
+endtry
 
 " vim-commentary
 map  gc  <Plug>Commentary
