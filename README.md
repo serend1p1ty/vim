@@ -7,3 +7,10 @@ My vim configuration
 git clone --depth=1 https://github.com/serend1p1ty/vim.git ~/.vim_runtime
 sh ~/.vim_runtime/install.sh
 ```
+
+## Update plugins
+
+```
+rm ~/.vim_runtime/plugged -rf
+vim "+PlugInstall" "+qall"
+```
