@@ -52,9 +52,6 @@ syntax enable
 filetype plugin on
 filetype indent on
 
-" no word wrap
-set nowrap
-
 set noswapfile
 set autoindent
 set smartindent
