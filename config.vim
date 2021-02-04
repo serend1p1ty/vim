@@ -122,6 +122,7 @@ Plug 'tpope/vim-commentary', { 'on': '<Plug>Commentary' }
 Plug 'tpope/vim-fugitive'
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
+Plug 'christoomey/vim-tmux-navigator'
 Plug '~/.fzf' | Plug 'junegunn/fzf.vim'
 
 call plug#end()

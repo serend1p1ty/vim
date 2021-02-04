@@ -138,9 +138,19 @@ function! fzf#vim#with_preview(...)
   " Placeholder expression (TODO/TBD: undocumented)
   let placeholder = get(spec, 'placeholder', '{}')
 
-  " Preview window
+  " g:fzf_preview_window
+  if empty(args)
+    let preview_args = get(g:, 'fzf_preview_window', ['right', 'ctrl-/'])
+    if empty(preview_args)
+      let args = ['hidden']
+    else
+      " For backward-compatiblity
+      let args = type(preview_args) == type('') ? [preview_args] : copy(preview_args)
+    endif
+  endif
+
   if len(args) && type(args[0]) == s:TYPE.string
-    if args[0] !~# '^\(up\|down\|left\|right\)'
+    if args[0] !~# '^\(up\|down\|left\|right\|hidden\)'
       throw 'invalid preview window: '.args[0]
     endif
     let window = args[0]
@@ -153,6 +163,12 @@ function! fzf#vim#with_preview(...)
   endif
   if s:is_win
     let is_wsl_bash = exepath('bash') =~? 'Windows[/\\]system32[/\\]bash.exe$'
+    if empty($MSWINHOME)
+      let $MSWINHOME = $HOME
+    endif
+    if is_wsl_bash && $WSLENV !~# '[:]\?MSWINHOME\(\/[^:]*\)\?\(:\|$\)'
+      let $WSLENV = 'MSWINHOME/u:'.$WSLENV
+    endif
     let preview_cmd = 'bash '.(is_wsl_bash
     \ ? substitute(substitute(s:bin.preview, '^\([A-Z]\):', '/mnt/\L\1', ''), '\', '/', 'g')
     \ : escape(s:bin.preview, '\'))
@@ -714,10 +730,11 @@ function! fzf#vim#buffers(...)
         \ [a:1, a:000[1:]] : ['', a:000]
   let sorted = fzf#vim#_buflisted_sorted()
   let header_lines = '--header-lines=' . (bufnr('') == get(sorted, 0, 0) ? 1 : 0)
+  let tabstop = len(sorted) >= 1000 ? 9 : 8
   return s:fzf('buffers', {
   \ 'source':  map(sorted, 'fzf#vim#_format_buffer(v:val)'),
   \ 'sink*':   s:function('s:bufopen'),
-  \ 'options': ['+m', '-x', '--tiebreak=index', header_lines, '--ansi', '-d', '\t', '--with-nth', '3..', '-n', '2,1..2', '--prompt', 'Buf> ', '--query', query, '--preview-window', '+{2}-/2']
+  \ 'options': ['+m', '-x', '--tiebreak=index', header_lines, '--ansi', '-d', '\t', '--with-nth', '3..', '-n', '2,1..2', '--prompt', 'Buf> ', '--query', query, '--preview-window', '+{2}-/2', '--tabstop', tabstop]
   \}, args)
 endfunction
 
@@ -941,7 +958,7 @@ function! fzf#vim#tags(query, ...)
   return s:fzf('tags', {
   \ 'source':  'perl '.fzf#shellescape(s:bin.tags).' '.join(map(tagfiles, 'fzf#shellescape(fnamemodify(v:val, ":p"))')),
   \ 'sink*':   s:function('s:tags_sink'),
-  \ 'options': extend(opts, ['--nth', '1..2', '-m', '--tiebreak=begin', '--prompt', 'Tags> ', '--query', a:query])}, a:000)
+  \ 'options': extend(opts, ['--nth', '1..2', '-m', '-d', '\t', '--tiebreak=begin', '--prompt', 'Tags> ', '--query', a:query])}, a:000)
 endfunction
 
 " ------------------------------------------------------------------
