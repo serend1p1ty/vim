@@ -123,9 +123,15 @@ Plug 'tpope/vim-fugitive'
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
 Plug 'christoomey/vim-tmux-navigator'
+Plug 'vim-nerdtree/nerdtree', { 'on': 'NERDTreeToggle' }
+Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeToggle' }
 Plug '~/.fzf' | Plug 'junegunn/fzf.vim'
 
 call plug#end()
+
+" nerdtree
+nnoremap <leader>n :NERDTreeToggle<CR>
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 " supertab
 " traverse the completion list from top to bottom

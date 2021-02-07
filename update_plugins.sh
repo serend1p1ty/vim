@@ -1,2 +1,2 @@
-rm ~/.vim_runtime/plugged -rf
+rm -rf ~/.vim_runtime/plugged
 vim "+PlugInstall" "+qall"
