@@ -103,7 +103,15 @@ nnoremap <silent> [b :bn<CR>
 " ]b -> previous buffer
 nnoremap <silent> ]b :bp<CR>
 " [d -> delete current buffer
-nnoremap <silent> [d :bd<CR>
+nnoremap <silent> [d :call DeleteBuffer()<CR>
+fu! DeleteBuffer()
+    let bufNo = len(filter(range(1, bufnr('$')), 'buflisted(v:val)'))
+    if bufNo > 1
+        exec "bp | bd #"
+    else
+        exec "bd"
+    endif
+endf
 
 " substitute
 cnoremap %s        %s/\v//g<left><left><left>
@@ -173,4 +181,4 @@ nnoremap <leader>d :Gdiffsplit<CR>
 " fzf
 nnoremap <C-P>     :Files<CR>
 nnoremap <leader>m :History<CR>
-nnoremap <leader>f :Files
+nnoremap <leader>f :Rg 
