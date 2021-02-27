@@ -56,6 +56,9 @@ set noswapfile
 set autoindent
 set smartindent
 
+" remember more recently used files
+set viminfo='100,"50
+
 " set ctags file path
 set tags=tags
 
