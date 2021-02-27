@@ -104,10 +104,10 @@ nnoremap zd Oimport ipdb; ipdb.set_trace(context=7)<ESC>
 " zc -> clear all breakpoints
 nnoremap zc :g/import ipdb; ipdb.set_trace(context=7)/d<CR>
 
-" [b -> next buffer
-nnoremap <silent> [b :bn<CR>
-" ]b -> previous buffer
-nnoremap <silent> ]b :bp<CR>
+" [b -> previous buffer
+nnoremap <silent> [b :bp<CR>
+" ]b -> next buffer
+nnoremap <silent> ]b :bn<CR>
 " [d -> delete current buffer
 nnoremap <silent> [d :call DeleteBuffer()<CR>
 fu! DeleteBuffer()
@@ -171,7 +171,7 @@ let g:lightline = {
   \ }
 
 " onedark.vim
-" when onedark.vim is not installed, an error will be raised
+" prevent from reporting an error when onedark.vim is not installed
 try
 colorscheme onedark
 catch
@@ -182,7 +182,10 @@ map  gc  <Plug>Commentary
 nmap gcc <Plug>CommentaryLine
 
 " vim-fugitive
-nnoremap <leader>d :Gdiffsplit<CR>
+" show the difference between git head and current
+nnoremap <leader>gd :Gdiffsplit<CR>
+" switch back to fugitive buffer and close it
+nnoremap <Leader>gD <C-W>h<C-W>c
 
 " fzf
 nnoremap <C-P>     :Files<CR>
