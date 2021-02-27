@@ -56,6 +56,9 @@ set noswapfile
 set autoindent
 set smartindent
 
+" set ctags file path
+set tags=tags
+
 " return to last edit position when opening file
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g'\"" | endif
 
