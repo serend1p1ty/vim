@@ -108,16 +108,8 @@ nnoremap zc :g/import ipdb; ipdb.set_trace(context=7)/d<CR>
 nnoremap <silent> [b :bp<CR>
 " ]b -> next buffer
 nnoremap <silent> ]b :bn<CR>
-" [d -> delete current buffer
-nnoremap <silent> [d :call DeleteBuffer()<CR>
-fu! DeleteBuffer()
-    let bufNo = len(filter(range(1, bufnr('$')), 'buflisted(v:val)'))
-    if bufNo > 1
-        exec "bp | bd #"
-    else
-        exec "bd"
-    endif
-endf
+" [d -> delete current buffer without close split window
+nnoremap <silent> [d :bp \| bd #<CR>
 
 " substitute
 cnoremap %s        %s/\v//g<left><left><left>
