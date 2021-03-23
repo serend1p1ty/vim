@@ -48,6 +48,9 @@ set encoding=utf-8
 " enable syntax highlighting
 syntax enable
 
+" disable bell
+set noerrorbells visualbell t_vb=
+
 " enable filetype plugins
 filetype plugin on
 filetype indent on
@@ -129,7 +132,7 @@ nnoremap <leader>s :%s/\<<C-R><C-W>\>//g<left><left>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#begin('~/.vim_runtime/plugged')
 
-Plug 'ervandew/supertab'
+Plug 'skywind3000/vim-auto-popmenu'
 Plug 'joshdick/onedark.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-commentary', { 'on': '<Plug>Commentary' }
@@ -145,10 +148,6 @@ call plug#end()
 " nerdtree
 nnoremap <leader>n :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-
-" supertab
-" traverse the completion list from top to bottom
-let g:SuperTabDefaultCompletionType = "<c-n>"
 
 " lightline
 set laststatus=2
@@ -191,3 +190,13 @@ nnoremap <Leader>gD <C-W>h<C-W>c
 nnoremap <C-P>     :Files<CR>
 nnoremap <leader>m :History<CR>
 nnoremap <leader>f :Rg 
+
+" vim-auto-popmenu
+" enable this plugin for all filetypes
+let g:apc_enable_ft = {'*': 1}
+" source for dictionary, current or other loaded buffers
+set cpt=.,k,w,b
+" don't select the first item
+set completeopt=menu,menuone,noselect
+" suppress annoy messages
+set shortmess+=c
