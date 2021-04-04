@@ -1,5 +1,8 @@
 # vim
+
 My vim configuration
+
+![overview](doc/overview.jpg)
 
 ## Installation
 
