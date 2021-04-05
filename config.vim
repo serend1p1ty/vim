@@ -132,7 +132,7 @@ nnoremap <leader>s :%s/\<<C-R><C-W>\>//g<left><left>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 call plug#begin('~/.vim_runtime/plugged')
 
-Plug 'skywind3000/vim-auto-popmenu'
+Plug 'ervandew/supertab'
 Plug 'joshdick/onedark.vim'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-commentary', { 'on': '<Plug>Commentary' }
@@ -176,6 +176,10 @@ colorscheme onedark
 catch
 endtry
 
+" supertab
+" traverse the completion list from top to bottom
+let g:SuperTabDefaultCompletionType = "<c-n>"
+
 " vim-commentary
 map  gc  <Plug>Commentary
 nmap gcc <Plug>CommentaryLine
@@ -190,13 +194,3 @@ nnoremap <Leader>gD <C-W>h<C-W>c
 nnoremap <C-P>     :Files<CR>
 nnoremap <leader>m :History<CR>
 nnoremap <leader>f :Rg 
-
-" vim-auto-popmenu
-" enable this plugin for all filetypes
-let g:apc_enable_ft = {'*': 1}
-" source for dictionary, current or other loaded buffers
-set cpt=.,k,w,b
-" don't select the first item
-set completeopt=menu,menuone,noselect
-" suppress annoy messages
-set shortmess+=c
