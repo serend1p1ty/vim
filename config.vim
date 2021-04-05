@@ -80,6 +80,9 @@ let mapleader = " "
 " <leader>p -> toogle paste mode
 set pastetoggle=<leader>p
 
+" jk -> back to normal mode
+inoremap jk <esc>
+
 " alt+z -> toogle word wrap
 nnoremap <silent> Ω :set wrap!<CR>
 
