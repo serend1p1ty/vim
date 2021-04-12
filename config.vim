@@ -148,6 +148,9 @@ call plug#end()
 " nerdtree
 nnoremap <leader>n :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" make <C-J> and <C-H> work in nerdtree buffer
+let g:NERDTreeMapJumpPrevSibling=""
+let g:NERDTreeMapJumpNextSibling=""
 
 " lightline
 set laststatus=2
