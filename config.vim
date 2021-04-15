@@ -148,9 +148,12 @@ call plug#end()
 " nerdtree
 nnoremap <leader>n :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-" make <C-J> and <C-H> work in nerdtree buffer
+" unmap <C-J> and <C-H> in nerdtree buffer to switch between tmux panels
 let g:NERDTreeMapJumpPrevSibling=""
 let g:NERDTreeMapJumpNextSibling=""
+" If another buffer tries to replace nerdtree, put it in the other window
+autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
 
 " lightline
 set laststatus=2
