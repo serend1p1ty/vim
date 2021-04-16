@@ -147,13 +147,14 @@ call plug#end()
 
 " nerdtree
 nnoremap <leader>n :NERDTreeToggle<CR>
+" exit vim if nerdtree is the only window left
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 " unmap <C-J> and <C-H> in nerdtree buffer to switch between tmux panels
 let g:NERDTreeMapJumpPrevSibling=""
 let g:NERDTreeMapJumpNextSibling=""
 " If another buffer tries to replace nerdtree, put it in the other window
 autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
-    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+    \ let buf=bufnr('%') | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
 
 " lightline
 set laststatus=2
@@ -191,6 +192,7 @@ map  gc  <Plug>Commentary
 nmap gcc <Plug>CommentaryLine
 
 " vim-fugitive
+nnoremap <leader>gs :Gstatus<CR>
 " show the difference between git head and current
 nnoremap <leader>gd :Gdiffsplit<CR>
 " switch back to fugitive buffer and close it
