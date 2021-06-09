@@ -302,6 +302,7 @@ function! s:fzf(name, opts, extra)
     throw 'invalid number of arguments'
   endif
 
+  let extra  = copy(extra)
   let eopts  = has_key(extra, 'options') ? remove(extra, 'options') : ''
   let merged = extend(copy(a:opts), extra)
   call s:merge_opts(merged, eopts)
@@ -642,7 +643,7 @@ function! fzf#vim#gitfiles(args, ...)
   let preview = printf(
     \ 'bash -c "if [[ {1} =~ M ]]; then %s; else %s {-1}; fi"',
     \ executable('delta')
-      \ ? 'git diff -- {-1} | delta --file-style=omit | sed 1d'
+      \ ? 'git diff -- {-1} | delta --width $FZF_PREVIEW_COLUMNS --file-style=omit | sed 1d'
       \ : 'git diff --color=always -- {-1} | sed 1,4d',
     \ s:bin.preview)
   let wrapped = fzf#wrap({
@@ -981,7 +982,7 @@ function! fzf#vim#snippets(...)
   let colored = map(aligned, 's:yellow(v:val[0])."\t".v:val[1]')
   return s:fzf('snippets', {
   \ 'source':  colored,
-  \ 'options': '--ansi --tiebreak=index +m -n 1 -d "\t"',
+  \ 'options': '--ansi --tiebreak=index +m -n 1,.. -d "\t"',
   \ 'sink':    s:function('s:inject_snippet')}, a:000)
 endfunction
 
@@ -1200,7 +1201,7 @@ function! s:commits_sink(lines)
   endfor
 endfunction
 
-function! s:commits(buffer_local, args)
+function! s:commits(range, buffer_local, args)
   let s:git_root = s:get_git_root()
   if empty(s:git_root)
     return s:warn('Not in git repository')
@@ -1214,16 +1215,19 @@ function! s:commits(buffer_local, args)
     let managed = !v:shell_error
   endif
 
-  if a:buffer_local
+  if len(a:range) || a:buffer_local
     if !managed
       return s:warn('The current buffer is not in the working tree')
     endif
-    let source .= ' --follow '.fzf#shellescape(current)
+    let source .= len(a:range)
+      \ ? printf(' -L %d,%d:%s --no-patch', a:range[0], a:range[1], fzf#shellescape(current))
+      \ : (' --follow '.fzf#shellescape(current))
+    let command = 'BCommits'
   else
     let source .= ' --graph'
+    let command = 'Commits'
   endif
 
-  let command = a:buffer_local ? 'BCommits' : 'Commits'
   let expect_keys = join(keys(get(g:, 'fzf_action', s:default_action)), ',')
   let options = {
   \ 'source':  source,
@@ -1240,7 +1244,7 @@ function! s:commits(buffer_local, args)
   endif
 
   if !s:is_win && &columns > s:wide
-    let suffix = executable('delta') ? '| delta' : '--color=always'
+    let suffix = executable('delta') ? '| delta --width $FZF_PREVIEW_COLUMNS' : '--color=always'
     call extend(options.options,
     \ ['--preview', 'echo {} | grep -o "[a-f0-9]\{7,\}" | head -1 | xargs git show --format=format: ' . suffix])
   endif
@@ -1248,12 +1252,34 @@ function! s:commits(buffer_local, args)
   return s:fzf(a:buffer_local ? 'bcommits' : 'commits', options, a:args)
 endfunction
 
-function! fzf#vim#commits(...)
-  return s:commits(0, a:000)
+" Heuristically determine if the user specified a range
+function! s:given_range(line1, line2)
+  " 1. From visual mode
+  "   :'<,'>Commits
+  " 2. From command-line
+  "   :10,20Commits
+  if a:line1 == line("'<") && a:line2 == line("'>") ||
+        \ (a:line1 != 1 || a:line2 != line('$'))
+    return [a:line1, a:line2]
+  endif
+
+  return []
 endfunction
 
-function! fzf#vim#buffer_commits(...)
-  return s:commits(1, a:000)
+function! fzf#vim#commits(...) range
+  if exists('b:fzf_winview')
+    call winrestview(b:fzf_winview)
+    unlet b:fzf_winview
+  endif
+  return s:commits(s:given_range(a:firstline, a:lastline), 0, a:000)
+endfunction
+
+function! fzf#vim#buffer_commits(...) range
+  if exists('b:fzf_winview')
+    call winrestview(b:fzf_winview)
+    unlet b:fzf_winview
+  endif
+  return s:commits(s:given_range(a:firstline, a:lastline), 1, a:000)
 endfunction
 
 " ------------------------------------------------------------------

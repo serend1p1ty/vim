@@ -77,8 +77,8 @@ command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 " let space be <leader>
 let mapleader = " "
 
-" <leader>p -> toogle paste mode
-set pastetoggle=<leader>p
+" <F2> -> toogle paste mode
+set pastetoggle=<F2>
 
 " alt+z -> toogle word wrap
 nnoremap <silent> Ω :set wrap!<CR>
