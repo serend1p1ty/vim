@@ -57,7 +57,6 @@ filetype indent on
 
 set noswapfile
 set autoindent
-set smartindent
 
 " remember more recently used files
 set viminfo='100,"50
