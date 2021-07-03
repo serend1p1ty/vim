@@ -138,6 +138,7 @@ Plug 'tpope/vim-commentary', { 'on': '<Plug>Commentary' }
 Plug 'tpope/vim-fugitive'
 Plug 'itchyny/lightline.vim'
 Plug 'mengelbrecht/lightline-bufferline'
+Plug 'mhinz/vim-startify'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'vim-nerdtree/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug '~/.fzf' | Plug 'junegunn/fzf.vim'
@@ -174,6 +175,10 @@ let g:lightline = {
       \   'buffers': 'tabsel'
       \ }
   \ }
+
+" startify
+" do not show <empty buffer> and <quit>
+let g:startify_enable_special = 0
 
 " onedark.vim
 " prevent from reporting an error when onedark.vim is not installed
