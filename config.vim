@@ -132,7 +132,7 @@ nnoremap <leader>s :%s/\<<C-R><C-W>\>//g<left><left>
 call plug#begin('~/.vim_runtime/plugged')
 
 Plug 'ervandew/supertab'
-Plug 'joshdick/onedark.vim'
+Plug 'joshdick/onedark.vim', { 'branch': 'main' }
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-commentary', { 'on': '<Plug>Commentary' }
 Plug 'tpope/vim-fugitive'

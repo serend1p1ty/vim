@@ -48,6 +48,26 @@ let g:lightline = {
       \ }
 ```
 
+If you are using neovim with a lua configuration the above example looks like this:
+```lua
+vim.g['lightline'] = {
+  colorscheme = 'one',
+  active = {
+    left = {{'mode', 'paste'}, {'readonly', 'filename', 'modified'}}
+  },
+  tabline = {
+    left = {{'buffers'}},
+    right = {{'close'}}
+  },
+  component_expand = {
+    buffers = 'lightline#bufferline#buffers'
+  },
+  component_type = {
+    buffers = 'tabsel'
+  }
+}
+```
+
 If you're adding the buffers to the bottom statusbar, the `modified` indicator will not be updated immediately. To work around this, add this autocmd to your vim config:
 
 ```viml
@@ -68,6 +88,10 @@ The indicator to use for a modified buffer. Default is `' +'`.
 ##### `g:lightline#bufferline#more_buffers`
 
 The indicator to use when there are buffers that are not shown on the bufferline because they didn't fit the available space. Default is `...`.
+
+##### `g:lightline#bufferline#disable_more_buffers_indicator`
+
+Disables the more buffers indicator so that all buffers are always shown on the bufferline even if they don't fit the available space. Default is `0`.
 
 ##### `g:lightline#bufferline#read_only`
 
@@ -146,7 +170,7 @@ The name to use for unnamed buffers. Default is `'*'`.
 
 ##### `g:lightline#bufferline#enable_devicons`
 
-Enables the usage of [vim-devicons](https://github.com/ryanoasis/vim-devicons) to display a filetype icon for the buffer.
+Enables the usage of [vim-devicons](https://github.com/ryanoasis/vim-devicons) or [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons) to display a filetype icon for the buffer.
 Default is `0`.
 
 ##### `g:lightline#bufferline#enable_nerdfont`
@@ -198,6 +222,19 @@ When more than one tab is opened, only buffers that are open in a window within 
 is only one tab, all buffers are shown. Default is `0`.
 This option can be useful if you are also displaying tabs in the lightline tabline.
 
+##### `g:lightline#bufferline#buffer_filter`
+
+This can be set to the name of a custom buffer filter function which will be used in addition to the standard buffer filtering.
+The function receives the buffer number as parameter and should return `1` to include the buffer and `0` to hide the buffer in the bufferline.
+For example to hide all neovim terminal buffers use this code in your vim config:
+```viml
+function LightlineBufferlineFilter(buffer)
+  return getbufvar(a:buffer, '&buftype') !=# 'terminal'
+endfunction
+
+let g:lightline#bufferline#buffer_filter = "LightlineBufferlineFilter"
+```
+
 ##### `g:lightline#bufferline#margin_left`
 
 The number of spaces to add on the left side of the buffer name. Default is `0`.
@@ -222,6 +259,12 @@ If set to `1` the bufferline is clickable under Neovim versions with `tablineat`
 
 ```viml
 let g:lightline.component_raw = {'buffers': 1}
+```
+
+Before the click handler for the buffer is executed a custom event `LightlineBufferlinePreClick` is emitted.
+To perform an operation before the buffer is switched via the click handler you can define an autocommand:
+```viml
+autocmd User LightlineBufferlinePreClick :echom "test"
 ```
 
 ## Mappings

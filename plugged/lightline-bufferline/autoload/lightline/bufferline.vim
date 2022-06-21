@@ -9,7 +9,9 @@ let s:filename_modifier   = get(g:, 'lightline#bufferline#filename_modifier', ':
 let s:min_buffer_count    = get(g:, 'lightline#bufferline#min_buffer_count', 0)
 let s:min_tab_count       = get(g:, 'lightline#bufferline#min_tab_count', 0)
 let s:filter_by_tabpage   = get(g:, 'lightline#bufferline#filter_by_tabpage', 0)
+let s:buffer_filter       = get(g:, 'lightline#bufferline#buffer_filter', 's:buffer_filter_noop')
 let s:auto_hide           = get(g:, 'lightline#bufferline#auto_hide', 0)
+let s:disable_more_buffers_indicator = get(g:, 'lightline#bufferline#disable_more_buffers_indicator', 0)
 let s:margin_left         = get(g:, 'lightline#bufferline#margin_left', 0)
 let s:margin_right        = get(g:, 'lightline#bufferline#margin_right', 0)
 let s:number_map          = get(g:, 'lightline#bufferline#number_map', {})
@@ -48,7 +50,15 @@ else
   let s:more_buffers_width = len(s:more_buffers) + 2
 endif
 
+if s:clickable
+  function! s:pre_click_handler()
+  endfunction
+
+  autocmd User LightlineBufferlinePreClick call s:pre_click_handler()
+endif
+
 function! lightline#bufferline#_click_handler(minwid, clicks, btn, modifiers)
+  doautocmd User LightlineBufferlinePreClick
   call s:goto_nth_buffer(a:minwid)
 endfunction
 
@@ -150,9 +160,15 @@ function! s:tabpage_filter(i)
   return 1
 endfunc
 
+function! s:buffer_filter_noop(buffer)
+  return 1
+endfunction
+
+let s:bufferFilterFunc = function(s:buffer_filter)
+
 function! s:filter_buffer(i)
-  return bufexists(a:i) && buflisted(a:i) && !(getbufvar(a:i, '&filetype') ==# 'qf')
-       \ && s:tabpage_filter(a:i)
+  return bufexists(a:i) && buflisted(a:i) && getbufvar(a:i, '&filetype') !=# 'qf'
+       \ && s:tabpage_filter(a:i) && call(s:bufferFilterFunc, [a:i])
 endfunction
 
 function! s:filtered_buffers()
@@ -208,7 +224,23 @@ function! s:get_buffer_paths(buffers)
 
     if strlen(l:name)
       let l:smart_buffer.path = fnamemodify(l:name, ':p:~:.')
-      let l:smart_buffer.sep = strridx(l:smart_buffer.path, s:dirsep, strlen(l:smart_buffer.path) - 2)
+
+      let sep = strridx(l:smart_buffer.path, s:dirsep)
+      if sep != -1 && l:smart_buffer.path[sep :] ==# s:dirsep
+        let sep = strridx(l:smart_buffer.path, s:dirsep, sep - 1)
+      endif
+
+      " On Windows consider UNIX directory separators as well because
+      " for example neovim converts \ to / upon :mksession
+
+      if sep == -1 && has('win32')
+        let sep = strridx(l:smart_buffer.path, '/')
+        if sep != -1 && l:smart_buffer.path[sep :] ==# '/'
+          let sep = strridx(l:smart_buffer.path, sep - 1)
+        endif
+      endif
+
+      let l:smart_buffer.sep = sep
       let l:smart_buffer.label = l:smart_buffer.path[l:smart_buffer.sep + 1:]
       let l:buffer_count_per_tail[l:smart_buffer.label] = get(l:buffer_count_per_tail, l:smart_buffer.label, 0) + 1
     else
@@ -277,7 +309,7 @@ function! s:select_buffers(before, current, after)
   let l:width = &columns - l:current_lengths[:0][0]
 
   " Display all buffers if there is enough space to display them
-  if s:sum(l:before_lengths) + s:sum(l:after_lengths) <= l:width
+  if s:disable_more_buffers_indicator || s:sum(l:before_lengths) + s:sum(l:after_lengths) <= l:width
     return [l:before_names, l:current_names, l:after_names]
   endif
 
