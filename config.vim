@@ -1,6 +1,9 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "                               Basic settings                               "
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" use vim defaults instead of 100% vi compatibility
+set nocompatible
+
 " configure backspace so it acts as it should act
 set backspace=indent,eol,start
 
@@ -25,10 +28,12 @@ set wildmenu
 " don't display the status prompt like '-- INSERT --'
 set noshowmode
 
-" indent using 4 spaces instead of tab
+" indent using 4 spaces instead of tab, except for go files
 set softtabstop=4
+set tabstop=4
 set expandtab
 set shiftwidth=4
+autocmd FileType go set noexpandtab
 
 " highlight search results
 set hlsearch
